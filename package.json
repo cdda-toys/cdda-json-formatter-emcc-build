@@ -1,0 +1,20 @@
+{
+  "name": "@cdda-toys/cdda-json-formatter-emcc-build",
+  "version": "0.0.1",
+  "description": "JSON formatter for the Cataclysm-DDA project compiled as emscripten module",
+  "main": "formatter.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cdda-toys/cdda-json-formatter-emcc-build.git"
+  },
+  "keywords": [
+    "Cataclysm-DDA"
+  ],
+  "author": "irwiss",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "bugs": {
+    "url": "https://github.com/cdda-toys/cdda-json-formatter-emcc-build/issues"
+  },
+  "homepage": "https://github.com/cdda-toys/cdda-json-formatter-emcc-build#readme",
+  "files": ["formatter.js", "LICENSE.txt"]
+}

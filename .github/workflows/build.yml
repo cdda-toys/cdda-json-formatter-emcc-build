@@ -1,0 +1,77 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - created
+
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install emscripten
+      run: |
+          sudo apt-get update && sudo apt-get install emscripten
+
+    - name: Checkout CleverRaven/Cataclysm-DDA
+      uses: actions/checkout@v3
+      with:
+        repository: CleverRaven/Cataclysm-DDA
+
+    - name: Build with emscripten
+      run: |
+        emcc -std=c++17 -Oz -flto -I src/ -isystem src/third-party/ \
+             -s WASM=0 -s ENVIRONMENT=web -s MODULARIZE=1 \
+             -s 'EXPORT_NAME=cdda_json_formatter' -s NO\_FILESYSTEM=1 -s LLD_REPORT_UNDEFINED -s SINGLE_FILE=1 \
+             -s NO_DISABLE_EXCEPTION_CATCHING -s EXPORTED_FUNCTIONS=_json_format -s EXPORTED_RUNTIME_METHODS=cwrap \
+             src/json.cpp tools/format/format.cpp tools/format_emscripten/format_emscripten.cpp \
+             -o formatter.js
+
+    - name: Checkout self repository
+      uses: actions/checkout@v3
+      with:
+        path: self-repository
+
+    - name: Concat license files
+      run: mv LICENSE.txt LICENSE-cdda.txt && cat self-repository/LICENSE.txt LICENSE-cdda.txt > LICENSE.txt
+
+    - name: Upload zipped html as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: formatter
+        path: |
+          formatter.js
+          LICENSE.txt
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release' && github.event.action == 'created'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: formatter
+
+      - name: Display files
+        run: ls -1R
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm version --git-tag-version false ${{ github.event.release.tag_name }}
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

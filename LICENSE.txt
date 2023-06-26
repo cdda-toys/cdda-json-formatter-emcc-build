@@ -1,0 +1,8 @@
+Contents of this repository are licensed under public domain or the MIT
+license, whichever you prefer.
+
+The built module distributes compiled parts of Cataclysm-DDA codebase
+which has a separate license, see below.
+
+The Cataclysm DDA project license follows:
+
