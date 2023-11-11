@@ -27,11 +27,11 @@ jobs:
 
     - name: Build with emscripten
       run: |
-        emcc -std=c++17 -Oz -flto -I src/ -isystem src/third-party/ \
+        emcc -std=c++17 -Oz -flto -I src/ -I tools/format/ -isystem src/third-party/ \
              -s WASM=0 -s ENVIRONMENT=web -s MODULARIZE=1 \
              -s 'EXPORT_NAME=cdda_json_formatter' -s NO\_FILESYSTEM=1 -s LLD_REPORT_UNDEFINED -s SINGLE_FILE=1 \
              -s NO_DISABLE_EXCEPTION_CATCHING -s EXPORTED_FUNCTIONS=_json_format -s EXPORTED_RUNTIME_METHODS=cwrap \
-             src/json.cpp tools/format/format.cpp tools/format_emscripten/format_emscripten.cpp \
+             src/wcwidth.cpp src/json.cpp tools/format/format.cpp tools/format_emscripten/format_emscripten.cpp \
              -o formatter.js
 
     - name: Checkout self repository
