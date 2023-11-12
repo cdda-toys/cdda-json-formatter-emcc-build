@@ -28,14 +28,17 @@ npm install --save @types/emscripten
 ```typescript
 interface FormatterModule extends EmscriptenModule { cwrap: typeof cwrap; }
 
+// possible values for this are in the json_error_output_colors_t enum in CDDA's json.h
+const json_error_output_colors_t_no_colors = 1;
+
 const getCddaJsonFormatterModule: () => Promise<FormatterModule> =
     require("@cdda-toys/cdda-json-formatter-emcc-build");
 
 const formatterModule = getCddaJsonFormatterModule();
 
 formatterModule.then(module => {
-    const applyFormatter = formatterModule.cwrap("json_format", "string", ["string"]);
-    let formattedJson = applyFormatter(unformattedJson);
+    const applyFormatter = formatterModule.cwrap("json_format", "string", ["string", "int"]);
+    let formattedJson = applyFormatter(unformattedJson, json_error_output_colors_t_no_colors);
 }
 ```
 
